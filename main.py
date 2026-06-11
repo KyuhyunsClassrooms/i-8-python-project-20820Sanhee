@@ -1,101 +1,90 @@
 # AI 활용 자유 주제 파이썬 미니 프로젝트
-# 이름 또는 학번: 
-# 프로젝트 주제: 
+# 이름 또는 학번:  20820 한산희
+# 프로젝트 주제:  나만의 스마트 공부 습관 점수 분석기
 
-# ============================================================
-# 사용 안내
-# ------------------------------------------------------------
-# 이 파일은 예시 골격입니다.
-# 그대로 제출하지 말고, 반드시 자신의 주제에 맞게 수정하세요.
-#
-# 필수 조건
-# 1. 2차원 리스트 사용
-# 2. 함수 2개 이상, 가능하면 3개 이상 분리
-# 3. 조건문 사용
-# 4. 반복문 사용
-# 5. 실행 결과 출력
-# ============================================================
+# 나만의 스마트 공부 습관 점수 분석기
 
+def input_log():
+    study_logs = []
 
-# ------------------------------------------------------------
-# 1. 데이터 준비: 2차원 리스트
-# ------------------------------------------------------------
-# 아래 예시는 "활동 추천 프로그램"입니다.
-# 자신의 주제에 맞게 data를 만드세요.
-#
-# 현재 열의 의미:
-# 0번 열: 활동 이름
-# 1번 열: 필요한 시간(분)
-# 2번 열: 추천 기분
-# 3번 열: 활동 유형
-# ------------------------------------------------------------
+    subject_count = int(input("오늘 공부한 과목 수를 입력하세요: "))
 
-activities = [
-    ["산책하기", 30, "피곤", "운동"],
-    ["짧은 낮잠", 20, "피곤", "휴식"],
-    ["좋아하는 음악 듣기", 10, "우울", "휴식"],
-    ["문제집 3쪽 풀기", 40, "차분", "공부"],
-    ["방 정리하기", 25, "답답", "생활"],
-    ["친구에게 연락하기", 15, "우울", "소통"],
-]
+    for i in range(subject_count):
+        print(f"\n[{i + 1}번째 과목 입력]")
+
+        subject = input("과목명: ")
+        planned_time = int(input("계획했던 시간(분): "))
+        actual_time = int(input("실제 공부한 시간(분): "))
+
+        # 집중도 점수 예외 처리
+        while True:
+            focus = int(input("집중도 점수(1~5): "))
+            if 1 <= focus <= 5:
+                break
+            print("집중도는 1~5 사이의 2" \
+            "숫자만 입력하세요.")
+
+        study_logs.append([subject, planned_time, actual_time, focus])
+
+    return study_logs
 
 
-# ------------------------------------------------------------
-# 2. 함수 정의
-# ------------------------------------------------------------
+def analyze_efficiency(logs):
+    total_score = 0
+    best_score = -1
+    best_subject = ""
 
-def show_intro():
-    """프로그램 제목과 안내를 출력한다."""
-    print("=" * 40)
-    print("AI 활용 자유 주제 파이썬 미니 프로젝트")
-    print("예시: 기분과 시간에 따른 활동 추천기")
-    print("=" * 40)
+    print("\n===== 과목별 분석 결과 =====")
+
+    for row in logs:
+        subject = row[0]
+        planned = row[1]
+        actual = row[2]
+        focus = row[3]
+
+        # 0으로 나누기 예외 처리
+        if planned == 0:
+            achievement = 0
+        else:
+            achievement = (actual / planned) * 100
+
+        efficiency = (achievement * 0.6) + (focus * 8)
+
+        print(f"\n과목: {subject}")
+        print(f"달성률: {achievement:.1f}%")
+        print(f"효율 점수: {efficiency:.1f}점")
+
+        total_score += efficiency
+
+        # 최고 효율 과목 찾기
+        if efficiency > best_score:
+            best_score = efficiency
+            best_subject = subject
+
+    average_score = total_score / len(logs)
+
+    return average_score, best_subject
 
 
-def get_user_input():
-    """사용자에게 기분과 남은 시간을 입력받는다."""
-    mood = input("현재 기분을 입력하세요. 예: 피곤, 우울, 차분, 답답: ")
-    minutes = int(input("사용 가능한 시간을 분 단위로 입력하세요: "))
-    return mood, minutes
+def show_report(avg_score, best_subject):
+    print("\n===== 오늘의 종합 리포트 =====")
+    print(f"평균 효율 점수: {avg_score:.1f}점")
+    print(f"최고 효율 과목: {best_subject}")
 
+    print("\n[내일의 한 줄 조언]")
 
-def find_recommendations(data, mood, minutes):
-    """2차원 리스트를 반복하며 조건에 맞는 활동을 찾는다."""
-    results = []
-
-    for row in data:
-        name = row[0]
-        required_minutes = row[1]
-        recommended_mood = row[2]
-        activity_type = row[3]
-
-        # 조건문: 사용자의 기분과 시간이 활동 조건에 맞는지 판단한다.
-        if recommended_mood == mood and required_minutes <= minutes:
-            results.append([name, required_minutes, activity_type])
-
-    return results
-
-
-def print_result(results):
-    """추천 결과를 출력한다."""
-    print("\n[추천 결과]")
-
-    if len(results) == 0:
-        print("조건에 맞는 활동이 없습니다.")
-        print("시간을 늘리거나 다른 기분을 입력해 보세요.")
+    if avg_score >= 90:
+        print("최고의 공부 습관입니다! 지금의 루틴을 유지해 보세요.")
+    elif avg_score >= 70:
+        print("좋은 흐름입니다. 집중력을 조금만 더 높여보세요.")
+    elif avg_score >= 50:
+        print("계획 대비 실천율을 높이면 더 좋은 결과가 나올 거예요.")
     else:
-        for item in results:
-            print(f"- {item[0]} / {item[1]}분 / 유형: {item[2]}")
+        print("공부한 건 맞죠? 내일은 계획표와 조금 더 친해져 봅시다.")
 
 
-def main():
-    show_intro()
-    mood, minutes = get_user_input()
-    results = find_recommendations(activities, mood, minutes)
-    print_result(results)
+# 메인 프로그램
+logs = input_log()
+average, best_subject = analyze_efficiency(logs)
+show_report(average, best_subject)
 
-
-# ------------------------------------------------------------
-# 3. 프로그램 실행
-# ------------------------------------------------------------
-main()
